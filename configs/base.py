@@ -5,7 +5,7 @@ config = edict()
 config.output = None
 
 #Dataset properties:
-config.path_to_dataset = '/home/viam/face_recognition/datasets/renamed_clean'
+config.path_to_dataset = '/Users/robinin/face_recognition/datasets/renamed_clean'
 config.nir_folder = 'NIR'
 config.vis_folder = 'VIS'
 config.load_same_label_pairs = './datasets/same_label_pairs.json'
