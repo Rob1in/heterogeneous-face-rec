@@ -75,8 +75,9 @@ def main(args):
         #     loss.backward()
         #     optimizer.step()
         for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
+            m = only_nir.size()[0]
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
-            for i in range(cfg.batch_size):
+            for i in range(m):
                 output_1 = translator(img1[i].unsqueeze(0))
                 if only_nir[i]:
                     output_2 = translator(img2[i].unsqueeze(0))
