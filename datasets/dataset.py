@@ -125,14 +125,12 @@ class HDTDataset(Dataset):
         Returns:
             _type_: _description_
         """        
-        # img_folder = self.nir_folder
         img_name = self.dp.nir_images[index]
         modality, label, sub_index = read_CASIA(img_name)
         
         same_class = torch.rand(1).item() < self.probability_to_same_class
         only_nir = torch.rand(1).item() < self.probability_to_only_nir
         
-        print(f"same class: {same_class}, only_nir: {only_nir}")
         if same_class and only_nir:    
             img2_name = random_element_in_list(self.dp.same_label_pair[img_name][0])
         
