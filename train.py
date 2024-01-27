@@ -44,7 +44,10 @@ def main(args):
                                      subindex_for_label=cfg.load_subindex_for_label,
                                      save_subindex_for_label=cfg.save_subindex_for_label)
     train_dataset = HDTDataset(d_properties, custom_transform=train_transform)
-    train_dataloader = DataLoader(train_dataset, batch_size=cfg.batch_size, shuffle=True)
+    train_dataloader = DataLoader(train_dataset,
+                                  batch_size=cfg.batch_size, 
+                                  shuffle=True, 
+                                  num_workers=cfg.dl_num_workers)
     #TODO: train val test split
     
     #Model
@@ -63,6 +66,14 @@ def main(args):
     train_loss = []
 
     
+    if cfg.profile:
+        prof = torch.profiler.profile(
+            schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=1),
+            on_trace_ready=torch.profiler.tensorboard_trace_handler(cfg.profiler_logs_path),
+            record_shapes=True,
+            with_stack=True)
+        
+        prof.start()
 
     for epoch in range(cfg.n_epoch):
         train_epoch_loss = 0
@@ -97,7 +108,9 @@ def main(args):
         
         print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))    
     
-
+    if cfg.profile:
+        prof.stop()
+        
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
