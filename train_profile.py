@@ -90,7 +90,7 @@ def main(args):
                 loss = criterion(output_1, output_2, same_label[i].item())
                 loss.backward()
                 optimizer.step()
-                if step + 1 >= 4:
+                if i + 1 >= 4:
                     break
                 p.step()
             break
