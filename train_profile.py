@@ -79,22 +79,28 @@ def main(args):
         profile_memory=True,  # This will take 1 to 2 minutes. Setting it to False could greatly speedup.
         with_stack=True
     ) as p:
-        for step, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
-            m = only_nir.size()[0]
+        for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
-            for i in range(m):
-                output_1 = translator(img1[i].unsqueeze(0))
-                if only_nir[i]:
-                    output_2 = translator(img2[i].unsqueeze(0))
-                else:
-                    output_2 = img2[i].unsqueeze(0)
-                loss = criterion(output_1, output_2, same_label[i].item())
-                loss.backward()
-                optimizer.step()
-                if i + 1 >= 4:
-                    break
-                p.step()
-            break
+
+            # Translate all images in the batch in one go
+            output_1 = translator(img1)
+            output_2 = translator(img2)
+            
+            # Use only_nir to select the translated image or the original image
+            output_2[~only_nir] = img2[~only_nir]
+
+            # Calculate loss using vectorized operations
+            loss = criterion(output_1, output_2, same_label)
+
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            if batch_index + 1 >= 4:
+                break
+            p.step()
+            
+            
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
