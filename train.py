@@ -84,7 +84,7 @@ def main(args):
     #     train_epoch_loss /= len(train_dataset)
     #     train_loss.append(train_epoch_loss)
         
-    #     print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))
+    #     
         
         
     for epoch in range(cfg.n_epoch):
@@ -108,8 +108,9 @@ def main(args):
             loss.backward()
             optimizer.step()
 
-    train_epoch_loss /= len(train_dataloader.dataset)
-    train_loss.append(train_epoch_loss)
+        train_epoch_loss /= len(train_dataloader.dataset)
+        train_loss.append(train_epoch_loss)
+        print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))
 
 
 if __name__ == "__main__":
