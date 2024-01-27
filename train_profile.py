@@ -70,9 +70,9 @@ def main(args):
             torch.profiler.ProfilerActivity.CPU,
             torch.profiler.ProfilerActivity.CUDA],
         schedule=torch.profiler.schedule(
-            wait=1,
+            wait=5,
             warmup=1,
-            active=2),
+            active=5),
         on_trace_ready=torch.profiler.tensorboard_trace_handler('./logs/profiles', worker_name='worker0'),
         record_shapes=True,
         profile_memory=True,  # This will take 1 to 2 minutes. Setting it to False could greatly speedup.
