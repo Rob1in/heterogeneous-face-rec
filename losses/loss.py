@@ -4,11 +4,10 @@ from facenet_pytorch import InceptionResnetV1
 
 class DeepContrastiveLoss(torch.nn.Module):
 
-    def __init__(self, device, pretrained_on:str='vggface2',  margin=2.0):
+    def __init__(self, pretrained_on:str='vggface2',  margin=2.0):
         super(DeepContrastiveLoss, self).__init__()
         self.margin = margin
         self.resnet = InceptionResnetV1(pretrained=pretrained_on).eval()
-        self.resnet.to(device)
         self.resnet.requires_grad_(False)
     def forward(self, output1, output2, same_label:bool):
         """_summary_

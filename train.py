@@ -58,33 +58,17 @@ def main(args):
 
     #Optimizer and Loss
     optimizer = torch.optim.Adam(translator.parameters(), lr=cfg.learning_rate)
-    criterion = DeepContrastiveLoss(device = device, 
-                                    pretrained_on = cfg.pretrained_on,
+    criterion = DeepContrastiveLoss(pretrained_on = cfg.pretrained_on,
                                     margin=cfg.loss_margin)
 
     
     criterion.to(device)
     train_loss = []
-
-    
-    if cfg.profile:
-        prof = torch.profiler.profile(
-            schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=1),
-            on_trace_ready=torch.profiler.tensorboard_trace_handler(cfg.profiler_logs_path),
-            record_shapes=True,
-            with_stack=True)
-        
-        prof.start()
     translator.train()
     
     for epoch in range(cfg.n_epoch):
         train_epoch_loss = 0
         for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
-            if cfg.profile:   
-                if batch_index >5:
-                    prof.stop()
-                    raise ValueError(f"BATCH INDex {batch_index}")
-                prof.step()
             m = only_nir.size()[0]
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
             for i in range(m):
@@ -101,10 +85,6 @@ def main(args):
         train_loss.append(train_epoch_loss)
         
         print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))    
-    
-    if cfg.profile:
-        prof.stop()
-        
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
