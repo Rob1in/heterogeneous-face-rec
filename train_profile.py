@@ -95,7 +95,7 @@ def main(args):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if batch_index + 1 >= 4:
+            if batch_index + 1 >= 12:
                 break
             p.step()
             
