@@ -10,20 +10,9 @@ class DeepContrastiveLoss(torch.nn.Module):
         self.resnet = InceptionResnetV1(pretrained=pretrained_on).eval()
         self.resnet.requires_grad_(False)
     def forward(self, output1, output2, same_label:bool):
-        """_summary_
-
-        Args:
-            output1 (_type_): 
-            output2 (_type_): _description_
-            same_label (bool): _description_
-            only_nir (bool): _description_
-
-        Returns:
-            _type_: _description_
-        """
         embedding_1 = self.resnet(output1)
         embedding_2 = self.resnet(output2)
-        label = int(same_label)
+        label = torch.tensor(same_label, dtype=torch.float32)
         euclidean_distance = F.pairwise_distance(embedding_1, embedding_2)
         pos = (1-label) * torch.pow(euclidean_distance, 2)
         neg = (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2)

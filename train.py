@@ -66,25 +66,60 @@ def main(args):
     train_loss = []
     translator.train()
     
+    # for epoch in range(cfg.n_epoch):
+    #     train_epoch_loss = 0
+    #     for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
+    #         m = only_nir.size()[0]
+    #         img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
+    #         for i in range(m):
+    #             output_1 = translator(img1[i].unsqueeze(0))
+    #             if only_nir[i]:
+    #                 output_2 = translator(img2[i].unsqueeze(0))
+    #             else:
+    #                 output_2 = img2[i].unsqueeze(0)
+    #             loss = criterion(output_1, output_2, same_label[i].item())
+    #             train_epoch_loss += loss.item()
+    #             loss.backward()
+    #         optimizer.step()
+    #     train_epoch_loss /= len(train_dataset)
+    #     train_loss.append(train_epoch_loss)
+        
+    #     print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))
+        
+        
     for epoch in range(cfg.n_epoch):
         train_epoch_loss = 0
         for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
-            m = only_nir.size()[0]
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
-            for i in range(m):
-                output_1 = translator(img1[i].unsqueeze(0))
-                if only_nir[i]:
-                    output_2 = translator(img2[i].unsqueeze(0))
-                else:
-                    output_2 = img2[i].unsqueeze(0)
-                loss = criterion(output_1, output_2, same_label[i].item())
-                train_epoch_loss += loss.item()
-                loss.backward()
+
+            # Translate all images in the batch in one go
+            output_1 = translator(img1)
+            output_2 = translator(img2)
+
+            for i in range(5):
+                print(f"output2[{i}]: {output_2[i][0][0][0]}")
+                print(f"img2[{i}]: {img2[i][0][0][0]}")
+                
+            # Use only_nir to select the translated image or the original image
+            output_2[~only_nir] = img2[~only_nir]
+            for i in range(5):
+                print(f"only_nir[{i}]: {only_nir[i]}")
+                print(f"output2_corrected[{i}]: {output_2[i][0][0][0]}")
+                
+                
+            # Calculate loss using vectorized operations
+            loss = criterion(output_1, output_2, same_label)
+            train_epoch_loss += loss.item()
+
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
             optimizer.step()
-        train_epoch_loss /= len(train_dataset)
-        train_loss.append(train_epoch_loss)
-        
-        print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))    
+
+    train_epoch_loss /= len(train_dataloader.dataset)
+    train_loss.append(train_epoch_loss)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
