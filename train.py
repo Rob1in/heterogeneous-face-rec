@@ -95,18 +95,10 @@ def main(args):
             # Translate all images in the batch in one go
             output_1 = translator(img1)
             output_2 = translator(img2)
-
-            for i in range(5):
-                print(f"output2[{i}]: {output_2[i][0][0][0]}")
-                print(f"img2[{i}]: {img2[i][0][0][0]}")
-                
+            
             # Use only_nir to select the translated image or the original image
             output_2[~only_nir] = img2[~only_nir]
-            for i in range(5):
-                print(f"only_nir[{i}]: {only_nir[i]}")
-                print(f"output2_corrected[{i}]: {output_2[i][0][0][0]}")
-                
-                
+
             # Calculate loss using vectorized operations
             loss = criterion(output_1, output_2, same_label)
             train_epoch_loss += loss.item()
