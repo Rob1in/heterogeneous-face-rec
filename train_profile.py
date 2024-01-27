@@ -89,11 +89,11 @@ def main(args):
                     output_2 = img2[i].unsqueeze(0)
                 loss = criterion(output_1, output_2, same_label[i].item())
                 loss.backward()
-            optimizer.step()
-            if step + 1 >= 4:
-                break
-            p.step()
-        
+                optimizer.step()
+                if step + 1 >= 4:
+                    break
+                p.step()
+            break
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
