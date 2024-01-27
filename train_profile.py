@@ -63,27 +63,22 @@ def main(args):
 
     
     criterion.to(device)
-    train_loss = []
 
     
-    if cfg.profile:
-        prof = torch.profiler.profile(
-            schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=1),
-            on_trace_ready=torch.profiler.tensorboard_trace_handler(cfg.profiler_logs_path),
-            record_shapes=True,
-            with_stack=True)
-        
-        prof.start()
-    translator.train()
-    
-    for epoch in range(cfg.n_epoch):
-        train_epoch_loss = 0
-        for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
-            if cfg.profile:   
-                if batch_index >5:
-                    prof.stop()
-                    raise ValueError(f"BATCH INDex {batch_index}")
-                prof.step()
+    with torch.profiler.profile(
+        activities=[
+            torch.profiler.ProfilerActivity.CPU,
+            torch.profiler.ProfilerActivity.CUDA],
+        schedule=torch.profiler.schedule(
+            wait=1,
+            warmup=1,
+            active=2),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler('./logs/profiles', worker_name='worker0'),
+        record_shapes=True,
+        profile_memory=True,  # This will take 1 to 2 minutes. Setting it to False could greatly speedup.
+        with_stack=True
+    ) as p:
+        for step, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
             m = only_nir.size()[0]
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
             for i in range(m):
@@ -93,16 +88,11 @@ def main(args):
                 else:
                     output_2 = img2[i].unsqueeze(0)
                 loss = criterion(output_1, output_2, same_label[i].item())
-                train_epoch_loss += loss.item()
                 loss.backward()
             optimizer.step()
-        train_epoch_loss /= len(train_dataset)
-        train_loss.append(train_epoch_loss)
-        
-        print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))    
-    
-    if cfg.profile:
-        prof.stop()
+            if step + 1 >= 4:
+                break
+            p.step()
         
 if __name__ == "__main__":
 
