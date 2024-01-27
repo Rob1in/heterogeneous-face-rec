@@ -74,10 +74,11 @@ def main(args):
             with_stack=True)
         
         prof.start()
-
+    translator.train()
+    
     for epoch in range(cfg.n_epoch):
         train_epoch_loss = 0
-        translator.train()
+        
         # for i, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
         #     print(f"size of img1 is {img1.size()}")
         #     print(f"size of only_nnir is {only_nir.size()}")
@@ -91,6 +92,8 @@ def main(args):
         #     loss.backward()
         #     optimizer.step()
         for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
+            if cfg.profile:
+                prof.step()
             m = only_nir.size()[0]
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
             for i in range(m):
