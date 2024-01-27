@@ -58,8 +58,8 @@ def main(args):
 
     #Optimizer and Loss
     optimizer = torch.optim.Adam(translator.parameters(), lr=cfg.learning_rate)
-    criterion = DeepContrastiveLoss(pretrained_on = cfg.pretrained_on,
-                                    device=device, 
+    criterion = DeepContrastiveLoss(device = device, 
+                                    pretrained_on = cfg.pretrained_on,
                                     margin=cfg.loss_margin)
 
     
