@@ -95,6 +95,7 @@ def main(args):
             if cfg.profile:
                 
                 if batch_index >5:
+                    prof.stop()
                     raise ValueError(f"BATCH INDex {batch_index}")
                 prof.step()
             m = only_nir.size()[0]
