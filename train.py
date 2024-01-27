@@ -93,9 +93,10 @@ def main(args):
         #     optimizer.step()
         for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
             if cfg.profile:
-                prof.step()
+                
                 if batch_index >5:
-                    break
+                    raise ValueError(f"BATCH INDex {batch_index}")
+                prof.step()
             m = only_nir.size()[0]
             img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
             for i in range(m):
