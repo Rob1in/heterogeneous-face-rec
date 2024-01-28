@@ -23,7 +23,7 @@ class DeepContrastiveLoss(torch.nn.Module):
         """
         embedding_1 = self.resnet(output1)
         embedding_2 = self.resnet(output2)
-        label = int(same_label)
+        label = int(~same_label)
         euclidean_distance = F.pairwise_distance(embedding_1, embedding_2)
         pos = (1-label) * torch.pow(euclidean_distance, 2)
         neg = (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2)

@@ -65,27 +65,6 @@ def main(args):
     criterion.to(device)
     train_loss = []
     translator.train()
-    
-    # for epoch in range(cfg.n_epoch):
-    #     train_epoch_loss = 0
-    #     for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
-    #         m = only_nir.size()[0]
-    #         img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
-    #         for i in range(m):
-    #             output_1 = translator(img1[i].unsqueeze(0))
-    #             if only_nir[i]:
-    #                 output_2 = translator(img2[i].unsqueeze(0))
-    #             else:
-    #                 output_2 = img2[i].unsqueeze(0)
-    #             loss = criterion(output_1, output_2, same_label[i].item())
-    #             train_epoch_loss += loss.item()
-    #             loss.backward()
-    #         optimizer.step()
-    #     train_epoch_loss /= len(train_dataset)
-    #     train_loss.append(train_epoch_loss)
-        
-    #     
-        
         
     for epoch in range(cfg.n_epoch):
         train_epoch_loss = 0
