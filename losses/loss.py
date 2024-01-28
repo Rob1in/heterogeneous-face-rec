@@ -12,9 +12,9 @@ class DeepContrastiveLoss(torch.nn.Module):
     def forward(self, output1, output2, same_label:bool):
         embedding_1 = self.resnet(output1)
         embedding_2 = self.resnet(output2)
-        label = ~same_label.int()
+        label = same_label.int()
         euclidean_distance = F.pairwise_distance(embedding_1, embedding_2)
-        pos = (1-label) * torch.pow(euclidean_distance, 2)
-        neg = (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2)
+        pos = label * torch.pow(euclidean_distance, 2)
+        neg = (1- label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2)
         loss_contrastive = torch.mean( pos + neg )
         return loss_contrastive
