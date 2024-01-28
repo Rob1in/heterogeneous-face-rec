@@ -104,9 +104,10 @@ def main(args):
             train_epoch_loss += loss.item()
 
             # Backward and optimize
-            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            optimizer.zero_grad()
+            
 
         train_epoch_loss /= len(train_dataloader.dataset)
         train_loss.append(train_epoch_loss)
