@@ -61,8 +61,9 @@ def main(args):
     criterion = DeepContrastiveLoss(pretrained_on = cfg.pretrained_on, 
                                     margin=cfg.loss_margin)
 
-    
+    # for parameters in criterion.parameters():
     criterion.to(device)
+    
 
     
     with torch.profiler.profile(
@@ -92,9 +93,11 @@ def main(args):
             loss = criterion(output_1, output_2, same_label)
 
             # Backward and optimize
-            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            optimizer.zero_grad()
+            
+            
             if batch_index + 1 >= 12:
                 break
             p.step()
