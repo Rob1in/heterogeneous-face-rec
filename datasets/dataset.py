@@ -125,7 +125,7 @@ class DatasetProperties():
             unique_labels.add(label)
         
         num_elements_to_select = int(len(unique_labels) * 0.25)
-        self.test_labels = set(random.sample(unique_labels, num_elements_to_select))
+        self.test_labels = set(random.sample(list(unique_labels), num_elements_to_select))
         self.train_labels = unique_labels - self.test_labels
         
 
