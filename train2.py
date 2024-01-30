@@ -1,5 +1,4 @@
 from datasets.dataset import HDTDataset, DatasetProperties
-import argparse
 from torchvision import transforms
 from models.PDT import PDT
 import torch
@@ -48,7 +47,8 @@ def main(cfg: DictConfig):
     train_dataloader = DataLoader(train_dataset,
                                   batch_size=cfg.dataloader.batch_size, 
                                   shuffle=True, 
-                                  num_workers=cfg.dataloader.num_workers)
+                                  num_workers=cfg.dataloader.num_workers,
+                                  pin_memory=cfg.dataloader.pin_memory)
     #TODO: train val test split
     
     #Model
@@ -87,26 +87,27 @@ def main(cfg: DictConfig):
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
-            break
         
         train_epoch_loss /= len(train_dataloader.dataset)
-        writer.add_scalar('training loss', train_epoch_loss, epoch*len(train_dataloader))
+        writer.add_scalar('training loss', train_epoch_loss, epoch*len(train_dataloader)*cfg.dataloader.batch_size)
         train_loss.append(train_epoch_loss)
         print("Epoch [{}/{}] ----> Training loss :{} \n".format(epoch+1,cfg.n_epoch,train_epoch_loss))
         
-        is_best, best_acc = True, .3
-        if epoch %cfg.save_checkpoint:
-            
+        if epoch % 10 == 0:
+            print(f"Saving checkpoint for epoch {epoch}")
             save_checkpoint({
-                'epoch': epoch + 1,
-                'optimizer' : optimizer.state_dict(),
-                'best_acc': best_acc,
-                'model_state_dict': translator.state_dict(), 
-                },
-                is_best,
-                it = epoch*len(train_dataloader),
-                path = os.path.join(checkpoints_folder_path))
-            
+                        'epoch': epoch + 1,
+                        'optimizer' : None,
+                        'best_acc': None,
+                        'model_state_dict': translator.state_dict(), 
+                        },
+                        False,
+                        it = epoch*len(train_dataloader),
+                        path = os.path.join(checkpoints_folder_path))
+                
+                
+        is_best, best_acc = True, .3
+
         if cfg.validate:
             translator.eval()
             val_loss = 0
@@ -117,12 +118,18 @@ def main(cfg: DictConfig):
                 output_2[~only_nir] = img2[~only_nir]
                 loss = criterion(output_1, output_2, same_label)
                 val_loss += loss.item()
-                break
             writer.add_scalar('val loss', val_loss, epoch*len(train_dataloader))
+            if epoch %cfg.save_checkpoint:       
+                save_checkpoint({
+                    'epoch': epoch + 1,
+                    'optimizer' : optimizer.state_dict(),
+                    'best_acc': best_acc,
+                    'model_state_dict': translator.state_dict(), 
+                    },
+                    is_best,
+                    it = epoch*len(train_dataloader),
+                    path = os.path.join(checkpoints_folder_path))
+            
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(
-        description="...")
-    parser.add_argument("--config", type=str, default = 'configs/base', help="py config file")
     main()

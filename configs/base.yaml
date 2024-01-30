@@ -2,7 +2,7 @@
 
 hydra:
   run:
-    dir: ./logs3/${hydra.job.name}
+    dir: ./results/${hydra.job.name}
   job:
     name: model:${loss.pretrained_on}_lr:${learning_rate}_bs:${dataloader.batch_size}_same-label:${dataloader.prob_same_label}_only-nir:${dataloader.prob_only_nir}_${now:%m-%d_%H-%M}
   
@@ -16,11 +16,12 @@ profiler_logs_path: './logs/profiles/profile.log'
 n_epoch: 20
 learning_rate: 0.001
 save_checkpoint: 20
-validate: True
+validate: False
 
 # Dataset properties
 dataset:
   path: '/Users/robinin/face_recognition/datasets/renamed_clean'
+  train_test_split: True
   nir_folder: 'NIR'
   vis_folder: 'VIS'
   load_same_label_pairs: './datasets/same_label_pairs.json'
@@ -34,6 +35,7 @@ dataloader:
   prob_same_label: .5
   prob_only_nir: .5
   batch_size: 64
+  pin_memory: True
 
 
 # PDT
