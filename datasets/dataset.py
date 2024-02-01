@@ -126,8 +126,9 @@ class DatasetProperties():
         
         num_elements_to_select = int(len(unique_labels) * 0.25)
         self.test_labels = set(random.sample(list(unique_labels), num_elements_to_select))
+        print(f" LABEL IN TEST SET IS {len(self.test_labels)}")
         self.train_labels = unique_labels - self.test_labels
-        
+        print(f" LABEL IN TRAIN SET IS {len(self.train_labels)}")
 
 class HDTDataset(Dataset):
     """_summary_
@@ -229,7 +230,7 @@ class NIRDataset(Dataset):
         self.transform = custom_transform
         
     def __len__(self):
-        return len(self.dp.train_nir_images)
+        return len(self.dp.test_nir_images)
            
     def __getitem__(self, index):
         img_name = self.dp.test_nir_images[index]
@@ -252,7 +253,7 @@ class VISDataset(Dataset):
         self.transform = custom_transform
         
     def __len__(self):
-        return len(self.dp.train_vis_images)
+        return len(self.dp.test_vis_images)
            
     def __getitem__(self, index):
         img_name = self.dp.test_vis_images[index]
