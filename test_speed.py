@@ -30,7 +30,7 @@ def main(cfg: DictConfig):
 
 
     #Model
-    path_to_checkpoint = '/Users/robinin/face_recognition/results/model:vggface2_lr:0.001_bs:64_same-label:0.5_only-nir:0.5_01-30_16-10/checkpoints/checkpoint_12960.pt'
+    path_to_checkpoint = cfg.model_checkpoint
     checkpoint = torch.load(path_to_checkpoint, map_location=torch.device(device))
     translator=PDT(pool_features=cfg.PDT.pool_features, use_se=False, use_bias=False, use_cbam=True)
     translator.load_state_dict(checkpoint['model_state_dict'])
