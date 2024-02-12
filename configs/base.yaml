@@ -2,7 +2,7 @@
 
 hydra:
   run:
-    dir: ./results/${hydra.job.name}
+    dir: ./logs3/${hydra.job.name}
   job:
     name: model:${loss.pretrained_on}_lr:${learning_rate}_bs:${dataloader.batch_size}_same-label:${dataloader.prob_same_label}_only-nir:${dataloader.prob_only_nir}_${now:%m-%d_%H-%M}
   
@@ -28,6 +28,8 @@ dataset:
   save_same_label_pairs: './datasets/same_label_pairs.json'
   load_subindex_for_label: './datasets/subindex_for_label.json'
   save_subindex_for_label: './datasets/subindex_for_label.json'
+  load_train_test_splits: './datasets/splits'
+  save_train_test_splits: './datasets/splits'
 
 # Dataloader properties
 dataloader:

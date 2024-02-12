@@ -9,9 +9,12 @@ hydra:
 defaults:
   - base
 
-model_checkpoint: path/to/checkpoint
+model_checkpoint: /Users/robinin/face_recognition/results/model:vggface2_lr:0.001_bs:64_same-label:0.5_only-nir:0.5_01-30_16-10/checkpoints/checkpoint_12960.pt
 
 threshold:
   start: 0.0
   stop: 1.0
   increment: 0.001
+
+
+model_backbone: r50

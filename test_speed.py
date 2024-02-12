@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import time
 from PIL import Image
+from deepface.DeepFace import represent
+import numpy as np
 
 @hydra.main(version_base=None, config_path="./configs", config_name="test")
 def main(cfg: DictConfig):
@@ -43,10 +45,17 @@ def main(cfg: DictConfig):
     path_to_image = "/Users/robinin/ir_rgb_pairs/1_ir.jpeg"
 
     input_img  = Image.open(path_to_image)
+    img_array = np.array(input_img)
     img = test_transform(input_img).unsqueeze(0)
     translation = 0
     embedding = 0
     N = 100
+    _ = represent(img_array,
+                      model_name="ArcFace",
+                      align=False,
+                      enforce_detection=False,
+                      )
+    
     for i in range(N):
         t0 = time.time()
         three_channel=translator(img)

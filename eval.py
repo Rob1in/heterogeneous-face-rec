@@ -1,5 +1,6 @@
 from datasets.dataset import HDTDataset, DatasetProperties, NIRDataset, VISDataset, read_CASIA
 import argparse
+from onnx2torch import convert
 from torchvision import transforms
 from models.PDT import PDT
 import torch
@@ -54,13 +55,18 @@ def main(cfg: DictConfig):
     resnet.requires_grad_(False)
     embeddings = {}
     baseline_embeddings = {}
+    onnx_model_path = '/Users/robinin/Downloads/face_recognition_sface_2021dec.onnx'
+# You can pass the path to the onnx model to convert it or...
+    sface = convert(onnx_model_path)
+    # summary(sface, (3,112,112))
+    resnet = sface.eval()
     baseline = True
-    fast = False
+    fast = True
     
     for img, img_name in tqdm(test_nir_data, desc="Translating and embedding NIR images"):
         _, label, _ = read_CASIA(img_name)
         if fast:
-            if int(label)>20:
+            if int(label)>100:
                 continue
         if baseline:
             untouched_img = img.unsqueeze(0)
@@ -74,7 +80,7 @@ def main(cfg: DictConfig):
     for img, img_name in tqdm(test_vis_data, desc="Embedding VIS images"):
         _, label, _ = read_CASIA(img_name)
         if fast:
-            if int(label)>20:
+            if int(label)>100:
                 continue
         embed = resnet(img.unsqueeze(0))
         embeddings[img_name] = embed
@@ -107,7 +113,9 @@ def main(cfg: DictConfig):
     roc_auc = metrics.auc(fpr, tpr)
     display = metrics.RocCurveDisplay(fpr=fpr, tpr=tpr,roc_auc=roc_auc)
     display.plot()
+    plt.savefig("./with_head.png")
     
+    plt.clf()
     ##BASELINE
     Y_baseline_pred = []
     baseline_distances = {}        
@@ -128,7 +136,7 @@ def main(cfg: DictConfig):
     display_baseline = metrics.RocCurveDisplay(fpr=fpr, tpr=tpr,roc_auc=roc_auc)
     display_baseline.plot()
     
-    plt.show()
+    plt.savefig("./no_head.png")
 
 if __name__ == "__main__":
     main()

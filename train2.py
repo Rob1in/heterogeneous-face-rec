@@ -37,6 +37,8 @@ def main(cfg: DictConfig):
     d_properties = DatasetProperties(path=cfg.dataset.path, 
                                      nir_folder= cfg.dataset.nir_folder, 
                                      vis_folder= cfg.dataset.vis_folder,
+                                     load_train_test_splits = cfg.dataset.load_train_test_splits,
+                                     save_train_test_splits = cfg.dataset.save_train_test_splits,
                                      same_label_pairs=cfg.dataset.load_same_label_pairs, 
                                      save_same_label_pairs=cfg.dataset.save_same_label_pairs,
                                      subindex_for_label=cfg.dataset.load_subindex_for_label,
@@ -111,7 +113,7 @@ def main(cfg: DictConfig):
         if cfg.validate:
             translator.eval()
             val_loss = 0
-            for batch_index, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
+            for _, (img1, img2, same_label, only_nir) in enumerate(train_dataloader):
                 img1, img2, same_label, only_nir = map(lambda x: x.to(device), [img1, img2, same_label, only_nir])
                 output_1 = translator(img1)
                 output_2 = translator(img2)
