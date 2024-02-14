@@ -89,7 +89,7 @@ def main(cfg: DictConfig):
         embeddings[img_name] = embed
         
     for img, img_name in tqdm(test_vis_data, desc="Embedding VIS images"):
-        img.to(device)
+        img = img.to(device)
         _, label, _ = read_CASIA(img_name)
         if fast:
             if int(label)>100:
