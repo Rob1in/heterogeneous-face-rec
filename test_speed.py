@@ -14,6 +14,8 @@ from PIL import Image
 from deepface.DeepFace import represent
 import numpy as np
 
+onnx_model_path = '/Users/robinin/Downloads/face_recognition_sface_2021dec.onnx'
+
 @hydra.main(version_base=None, config_path="./configs", config_name="test")
 def main(cfg: DictConfig):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
