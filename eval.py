@@ -1,4 +1,4 @@
-from datasets.dataset import HDTDataset, DatasetProperties, NIRDataset, VISDataset, read_CASIA
+from datasets.dataset import HDTDataset, DatasetProperties, NIRDataset, VISDataset
 import argparse
 from onnx2torch import convert
 from torchvision import transforms
@@ -15,6 +15,7 @@ from sklearn import metrics
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from datasets.utils import read_CASIA
 
 @hydra.main(version_base=None, config_path="./configs", config_name="test")
 def main(cfg: DictConfig):
