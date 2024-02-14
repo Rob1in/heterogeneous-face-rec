@@ -61,7 +61,8 @@ def main(cfg: DictConfig):
 
     #Optimizer and Loss
     optimizer = torch.optim.Adam(translator.parameters(), lr=cfg.learning_rate)
-    criterion = DeepContrastiveLoss(pretrained_on = cfg.loss.pretrained_on,
+    criterion = DeepContrastiveLoss(framework = cfg.loss.framework,
+                                    pretrained_on = cfg.loss.pretrained_on,
                                     margin=cfg.loss.margin)
 
     

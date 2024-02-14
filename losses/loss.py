@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from facenet_pytorch import InceptionResnetV1
 from onnx2torch import convert
 
-onnx_model_path = '/Users/robinin/Downloads/face_recognition_sface_2021dec.onnx'
+onnx_model_path = './models/checkpoints/face_recognition_sface_2021dec.onnx'
 sface = convert(onnx_model_path)
 class DeepContrastiveLoss(torch.nn.Module):
 
