@@ -35,10 +35,13 @@ def main(cfg: DictConfig):
     d_properties = DatasetProperties(path=cfg.dataset.path, 
                                      nir_folder= cfg.dataset.nir_folder, 
                                      vis_folder= cfg.dataset.vis_folder,
+                                     load_train_test_splits = cfg.dataset.load_train_test_splits,
+                                     save_train_test_splits = cfg.dataset.save_train_test_splits,
                                      same_label_pairs=cfg.dataset.load_same_label_pairs, 
                                      save_same_label_pairs=cfg.dataset.save_same_label_pairs,
                                      subindex_for_label=cfg.dataset.load_subindex_for_label,
-                                     save_subindex_for_label=cfg.dataset.save_subindex_for_label)
+                                     save_subindex_for_label=cfg.dataset.save_subindex_for_label,
+                                     )
     test_nir_data = NIRDataset(d_properties, test_transform)
     test_vis_data = VISDataset(d_properties, test_transform)
     
@@ -51,15 +54,20 @@ def main(cfg: DictConfig):
     translator.eval()
     translator.requires_grad_(False)
     translator.to(device)
-    resnet = InceptionResnetV1(pretrained=cfg.loss.pretrained_on).eval()
-    resnet.requires_grad_(False)
+    if cfg.loss.framework == 'facenet_pytorch':
+        face_recognizer = InceptionResnetV1(pretrained=cfg.loss.pretrained_on).eval()
+    if cfg.loss.framework == 'sface':
+        onnx_model_path = './models/checkpoints/face_recognition_sface_2021dec.onnx'
+        face_recognizer = convert(onnx_model_path).eval()
+    else:
+        raise ValueError("pas du tout le bon nom")
+    face_recognizer.requires_grad_(False)
+    face_recognizer.to(device)
     embeddings = {}
     baseline_embeddings = {}
     onnx_model_path = '/Users/robinin/Downloads/face_recognition_sface_2021dec.onnx'
 # You can pass the path to the onnx model to convert it or...
-    sface = convert(onnx_model_path)
     # summary(sface, (3,112,112))
-    resnet = sface.eval()
     baseline = True
     fast = True
     
@@ -70,11 +78,11 @@ def main(cfg: DictConfig):
                 continue
         if baseline:
             untouched_img = img.unsqueeze(0)
-            embed = resnet(untouched_img)
+            embed = face_recognizer(untouched_img)
             baseline_embeddings[img_name] = embed
             
         translated_img = translator(img.unsqueeze(0)) 
-        embed = resnet(translated_img)
+        embed = face_recognizer(translated_img)
         embeddings[img_name] = embed
         
     for img, img_name in tqdm(test_vis_data, desc="Embedding VIS images"):
@@ -82,7 +90,7 @@ def main(cfg: DictConfig):
         if fast:
             if int(label)>100:
                 continue
-        embed = resnet(img.unsqueeze(0))
+        embed = face_recognizer(img.unsqueeze(0))
         embeddings[img_name] = embed
         baseline_embeddings[img_name] = embed
     
