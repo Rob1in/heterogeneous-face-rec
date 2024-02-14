@@ -49,6 +49,7 @@ def main(cfg: DictConfig):
 
     #Model
     path_to_checkpoint = '/Users/robinin/face_recognition/results/model:vggface2_lr:0.001_bs:64_same-label:0.5_only-nir:0.5_01-30_16-10/checkpoints/checkpoint_12960.pt'
+    path_to_checkpoint = '/root/robin/face_recognition/heterogeneous-face-rec/results/model:sface-x_lr:0.001_bs:64_same-label:0.5_only-nir:0.5_02-14_16-52/checkpoints/checkpoint_13680.pt'
     checkpoint = torch.load(path_to_checkpoint, map_location=torch.device(device))
     translator=PDT(pool_features=cfg.PDT.pool_features, use_se=False, use_bias=False, use_cbam=True)
     translator.load_state_dict(checkpoint['model_state_dict'])
@@ -70,9 +71,10 @@ def main(cfg: DictConfig):
 # You can pass the path to the onnx model to convert it or...
     # summary(sface, (3,112,112))
     baseline = True
-    fast = True
+    fast = False
     
     for img, img_name in tqdm(test_nir_data, desc="Translating and embedding NIR images"):
+        img.to(device)
         _, label, _ = read_CASIA(img_name)
         if fast:
             if int(label)>100:
@@ -87,6 +89,7 @@ def main(cfg: DictConfig):
         embeddings[img_name] = embed
         
     for img, img_name in tqdm(test_vis_data, desc="Embedding VIS images"):
+        img.to(device)
         _, label, _ = read_CASIA(img_name)
         if fast:
             if int(label)>100:
