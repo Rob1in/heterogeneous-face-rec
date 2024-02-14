@@ -74,7 +74,7 @@ def main(cfg: DictConfig):
     fast = False
     
     for img, img_name in tqdm(test_nir_data, desc="Translating and embedding NIR images"):
-        img.to(device)
+        img = img.to(device)
         _, label, _ = read_CASIA(img_name)
         if fast:
             if int(label)>100:
