@@ -4,7 +4,7 @@ hydra:
   run:
     dir: ./logs3/${hydra.job.name}
   job:
-    name: model:${loss.framework}-${loss.pretrained_on}_lr:${learning_rate}_bs:${dataloader.batch_size}_same-label:${dataloader.prob_same_label}_only-nir:${dataloader.prob_only_nir}_${now:%m-%d_%H-%M}
+    name: model:${loss.framework}-${loss.pretrained_on}_${loss.distance}_lr:${learning_rate}_bs:${dataloader.batch_size}_same-label:${dataloader.prob_same_label}_only-nir:${dataloader.prob_only_nir}_${now:%m-%d_%H-%M}
   
 
 # Profiler
@@ -46,6 +46,7 @@ PDT:
 
 # Loss function
 loss:
+  distance: 'cosine' #'euclidean' or 'cosine'
   framework: 'sface' #can be 'facenet_pytorch' or 'sface'
   pretrained_on: 'vggface2' #if fw is facenet_pytorch it can be 'casia-webface' or 'vggface2'
   margin: 2
