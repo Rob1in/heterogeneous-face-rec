@@ -99,8 +99,14 @@ def main(cfg: DictConfig):
         baseline_embeddings[img_name] = embed
     
     distance = F.pairwise_distance
-    
-    
+    # cosine_distance = F.cosine_similarity
+    def cosine_distance(t1, t2):
+        return 1-F.cosine_similarity(t1,2)
+    if cfg.distance =='cosine':
+        distance = cosine_distance
+    else:
+        raise ValueError("Zebi")
+        
     Y_truth = []
     ##MODEL
     Y_pred =[]
