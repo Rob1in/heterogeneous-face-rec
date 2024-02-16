@@ -24,7 +24,7 @@ def main(cfg: DictConfig):
         transforms.Normalize(
        #mean=[0.485, 0.456, 0.406],
        mean=[0, 0, 0.],
-    #    std=[0.229, 0.224, 0.225]
+       std=[0.25, 0.25, 0.25]
    ),
         
     ])
