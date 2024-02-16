@@ -98,12 +98,14 @@ def main(cfg: DictConfig):
         embeddings[img_name] = embed
         baseline_embeddings[img_name] = embed
     
-    distance = F.pairwise_distance
+    # distance = F.pairwise_distance
     # cosine_distance = F.cosine_similarity
     def cosine_distance(t1, t2):
         return 1-F.cosine_similarity(t1,t2)
     if cfg.distance =='cosine':
         distance = cosine_distance
+    elif cfg.distance=='euclidean':
+        distance = F.pairwise_distance
     else:
         raise ValueError("Zebi")
         
