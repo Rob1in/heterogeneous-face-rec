@@ -1,0 +1,17 @@
+# config.yaml
+
+hydra:
+  run:
+    dir: ./logs3/results/${hydra.job.name}
+  job:
+    name: model:${loss.pretrained_on}_lr:${learning_rate}_bs:${dataloader.batch_size}_same-label:${dataloader.prob_same_label}_only-nir:${dataloader.prob_only_nir}_${now:%m-%d_%H-%M}
+
+defaults:
+  - base
+
+model_checkpoint: path/to/checkpoint
+
+threshold:
+  start: 0.0
+  stop: 1.0
+  increment: 0.001
